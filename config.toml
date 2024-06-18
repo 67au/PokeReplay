@@ -1,0 +1,13 @@
+[from_server]
+api_url = ""
+username = ""
+password = ""
+origin = ""
+referer = ""
+
+[to_server]
+api_url = ""
+username = ""
+password = ""
+origin = ""
+referer = ""
