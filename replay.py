@@ -74,34 +74,36 @@ class PokeClient:
         await self.client.options(endpoint)
         resp = await self.client.post(endpoint, data=post_data)
         token = resp.json().get('token')
-        if token is not None:
-            self.client.headers['Authorization'] = token
+        if token is None:
+            assert 'Username or Password is incorrect'
+        self.client.headers['Authorization'] = token
         return token
 
     async def info(self):
         endpoint = '/account/info'
+        await self.client.options(endpoint)
         resp = await self.client.get(endpoint)
         return resp.json()
 
     async def system(self, client_session_id: str):
-        endpoint = '/savedata/system'
+        endpoint = '/savedata/system/get'
         params = {'clientSessionId': client_session_id}
         await self.client.options(endpoint, params=params)
         resp = await self.client.get(endpoint, params=params)
         return resp.json()
 
     async def update(self, data: dict, datatype: int, client_session_id: str) -> bool:
-        endpoint = '/savedata/update'
+        endpoint = '/savedata/system/update'
         params = {
             'datatype': datatype,
             'trainerId': data['trainerId'],
             'secretId': data['secretId'],
             'clientSessionId': client_session_id
         }
+        await self.info()
         await self.client.options(endpoint, params=params)
-        # cls=BigIntConverter))
         resp = await self.client.post(endpoint, params=params, data=json.dumps(data,))
-        return resp.status_code == 200
+        return resp.status_code == 204
 
 
 async def replay(from_config: ServerConfig = None, to_config: ServerConfig = None,  dump_json: Path = None, load_json: Path = None, eggs: int = 0) -> bool:
